@@ -1,0 +1,4 @@
+tlusty t20000g50lt
+tlusty t20000g50nc t20000g50lt
+tlusty t20000g50nl t20000g50nc
+synspec t20000g50nl fort.55.lin data/gfall.dat

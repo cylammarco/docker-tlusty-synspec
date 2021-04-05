@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+
+io_folder/data

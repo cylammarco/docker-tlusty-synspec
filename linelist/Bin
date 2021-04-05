@@ -1,0 +1,9 @@
+list2bin.exe <gfATO.dat >gfATO.log
+mv fort.12 gfATO.bin
+
+list2bin.exe <gfMOL.dat >gfMOL.log
+mv fort.12 gfMOL.bin
+
+list2bin.exe <gfTiO.dat >gfTiO.log
+mv fort.12 gfTiO.bin
+
