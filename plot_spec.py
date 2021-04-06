@@ -19,19 +19,23 @@ parser.add_argument('--wmax',
                     default=1250,
                     help="Maximum wavelength (nm)")
 
-folder_path = parser.folder
-wave_min = parser.wmin
-wave_max = parser.wmax
+args = parser.parse_args()
 
-fig2 = plt.figure(1, figsize=(12, 6))
-fig3 = plt.figure(2, figsize=(12, 6))
+folder_path = args.folder
+wave_min = args.wmin
+wave_max = args.wmax
 
-ax2 = fig2.add_subplot()
-ax3 = fig3.add_subplot()
+os.chdir(folder_path)
+
+fig2 = plt.figure(2, figsize=(12, 6))
+fig3 = plt.figure(3, figsize=(12, 6))
+
+ax7 = fig2.add_subplot()
+ax8 = fig3.add_subplot()
 
 for i in os.listdir(folder_path):
 
-    if i.endswith('.9'):
+    if i.endswith('.9') and not i.endswith('fort.9'):
 
         table = np.genfromtxt(i, skip_header=3, dtype='U')
 
@@ -62,6 +66,7 @@ for i in os.listdir(folder_path):
         ifr = np.array(ifr).astype('int')
 
         fig1 = plt.figure(1, figsize=(20, 12))
+        fig1.clf()
         # top left
         ax1 = fig1.add_subplot(2, 3, 1)
         # top centre
@@ -77,18 +82,18 @@ for i in os.listdir(folder_path):
 
         temp_iter = np.zeros(len(np.unique(iteration)))
         maximum_iter = np.zeros(len(np.unique(iteration)))
-        for i in np.sort(np.unique(iteration)):
-            mask = (iteration == i)
-            ax1.plot(iteration_id[mask], temp[mask], label=str(i))
+        for j in np.sort(np.unique(iteration)):
+            mask = (iteration == j)
+            ax1.plot(iteration_id[mask], temp[mask], label=str(j))
             ax2.plot(iteration_id[mask],
                      np.log10(np.abs(temp[mask])),
-                     label=str(i))
-            ax4.plot(iteration_id[mask], maximum[mask], label=str(i))
+                     label=str(j))
+            ax4.plot(iteration_id[mask], maximum[mask], label=str(j))
             ax5.plot(iteration_id[mask],
                      np.log10(np.abs(maximum[mask])),
-                     label=str(i))
-            temp_iter[i - 1] = abs(temp[mask][0])
-            maximum_iter[i - 1] = abs(maximum[mask][0])
+                     label=str(j))
+            temp_iter[j - 1] = abs(temp[mask][0])
+            maximum_iter[j - 1] = abs(maximum[mask][0])
 
         ax3.plot(np.sort(np.unique(iteration)), np.log10(temp_iter))
         ax6.plot(np.sort(np.unique(iteration)), np.log10(maximum_iter))
@@ -125,13 +130,13 @@ for i in os.listdir(folder_path):
         ax6.set_xlabel('iteration')
         ax6.set_ylabel(r'Maximum V$_{\mathrm{end\ point}}$')
 
-        fig1.suptitle(i.split('/')[-1])
+        fig1.suptitle(i)
         fig1.tight_layout()
         fig1.savefig(
-            os.path.join('01_TLUSTY_convergence_',
-                         i.split('/')[-1].split('.')[0], '.png'))
+            '01_TLUSTY_convergence_' +
+                         i.split('.')[0] + '.png')
 
-    if i.endswith(".13"):
+    if i.endswith(".13") and not i.endswith('fort.13'):
 
         data = np.genfromtxt(i, dtype='U')
 
@@ -149,9 +154,9 @@ for i in os.listdir(folder_path):
         mask = (wave > wave_min) & (wave < wave_max)
         fig2_ymax = np.nanmax(flux[mask])
 
-        ax1.plot(wave[mask], flux[mask], label=i.split('/')[-1])
+        ax7.plot(wave[mask], flux[mask], label=i.split('/')[-1])
 
-    if i.endswith('.spec'):
+    if i.endswith('.spec') and not i.endswith('fort.spec'):
 
         spec = np.genfromtxt(i)
         wave = spec[:, 0] / 10.
@@ -160,21 +165,21 @@ for i in os.listdir(folder_path):
         mask = (wave > wave_min) & (wave < wave_max)
         fig3_ymax = np.nanmax(flux[mask])
 
-        ax3.plot(wave, flux, label=i.split('/')[-1])
+        ax8.plot(wave, flux, label=i.split('/')[-1])
 
-ax2.xlim(wave_min, wave_max)
-ax2.ylim(0.0, fig2_ymax)
-ax2.xlabel('Wavelength / nm')
-ax2.ylabel('Flux / Arbitrary')
-ax2.grid()
-ax2.legend()
-ax2.tight_layout()
-ax2.savefig(os.path.join(folder_path, '02_TLUSTY_output.png'))
+ax7.set_xlim(wave_min, wave_max)
+ax7.set_ylim(0.0, fig2_ymax)
+ax7.set_xlabel('Wavelength / nm')
+ax7.set_ylabel('Flux / Arbitrary')
+ax7.grid()
+ax7.legend()
+fig2.tight_layout()
+fig2.savefig(os.path.join(folder_path, '02_TLUSTY_output.png'))
 
-ax3.xlim(wave_min, wave_max)
-ax3.ylim(0.0, fig3_ymax)
-ax3.xlabel('Wavelength / nm')
-ax3.ylabel('Flux / Arbitrary')
-ax3.grid()
-ax3.tight_layout()
-ax3.savefig(os.path.join(folder_path, '03_SYNSPEC_output.png'))
+ax8.set_xlim(wave_min, wave_max)
+ax8.set_ylim(0.0, fig3_ymax)
+ax8.set_xlabel('Wavelength / nm')
+ax8.set_ylabel('Flux / Arbitrary')
+ax8.grid()
+fig3.tight_layout()
+fig3.savefig(os.path.join(folder_path, '03_SYNSPEC_output.png'))
